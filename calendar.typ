@@ -7,7 +7,7 @@
 #let holiday_database = toml("holidays.toml")
 #let name_database = toml("names.toml")
 
-#let calendar(year: "", holidays: "", names: "", photo_dir: "", body) = {
+#let calendar(year: "", holidays: "", names: "", photos: "", body) = {
   set text(font: "Josefin Sans")
 
   let photo-ctx = markly.setup(
@@ -80,7 +80,7 @@
       dx: -4mm,
       dy: -4mm,
       image(
-        photo_dir + "/" + str(month) + ".jpg",
+        photos + "/" + str(month) + ".jpg",
         width: 297mm + 8mm,
         height: 210mm + 8mm,
       ),
