@@ -1,42 +1,50 @@
 #import "@preview/linguify:0.5.0": *
 #import "@preview/markly:0.4.0"
 
+#let bleed = 4mm
+
 #let lang_database = toml("data/lang.toml")
 #let translate(phrase) = linguify(phrase, from: lang_database)
 
 #let holiday_database = toml("data/holidays.toml")
 #let name_database = toml("data/names.toml")
 
+#let markly-ctx = markly.setup.with(
+  stock-width: 320mm,
+  stock-height: 225mm,
+  content-width: 297mm,
+  content-height: 210mm,
+  bleed: bleed,
+  bleed-marks: false,
+  cut-marks: true,
+  registration-marks: true,
+)
+
+#let photo-ctx = markly-ctx(
+  margin-width: 0mm,
+  margin-height: 0mm,
+)
+
+#let calendar-ctx = markly-ctx(
+  margin-width: 5mm,
+  margin-height: 15mm,
+)
+
+
+#let photo(path) = place(
+  top + left,
+  dx: -bleed,
+  dy: -bleed,
+  image(
+    path,
+    width: 297mm + 2 * bleed,
+    height: 210mm + 2 * bleed,
+  ),
+)
+
+
 #let calendar(year: "", holidays: "", names: "", photos: "", body) = {
   set text(font: "Josefin Sans")
-
-  let photo-ctx = markly.setup(
-    stock-width: 320mm,
-    stock-height: 225mm,
-    content-width: 297mm,
-    content-height: 210mm,
-    bleed: 4mm,
-    margin-width: 0mm,
-    margin-height: 0mm,
-    bleed-marks: false,
-    cut-marks: true,
-    registration-marks: true,
-  )
-
-  let calendar-ctx = markly.setup(
-    stock-width: 320mm,
-    stock-height: 225mm,
-    content-width: 297mm,
-    content-height: 210mm,
-    bleed: 4mm,
-    margin-width: 5mm,
-    margin-height: 15mm,
-    bleed-marks: false,
-    cut-marks: true,
-    registration-marks: true,
-  )
-
-  set document(title: str(year))
 
   let have_names = names in name_database
   let have_holidays = holidays in holiday_database
@@ -71,20 +79,33 @@
     }
   }
 
+  show: markly.page-setup.with(photo-ctx)
+
+  photo(photos + "/0.jpg")
+
+  let title = translate("calendar") + " " + str(year)
+  place(
+    top + left,
+    dx: -bleed,
+    dy: 15mm,
+    block(
+      fill: rgb(0, 0, 0, 180), 
+      inset: 16pt,
+      radius: 4pt,
+      [
+        #h(bleed)
+        #text(fill: white, size: 30pt, [#title])
+      ]
+    )
+  )
+
+  pagebreak()
+
   for month in range(1, 13) [
 
     #show: markly.page-setup.with(photo-ctx)
 
-    #place(
-      top + left,
-      dx: -4mm,
-      dy: -4mm,
-      image(
-        photos + "/" + str(month) + ".jpg",
-        width: 297mm + 8mm,
-        height: 210mm + 8mm,
-      ),
-    )
+    #photo(photos + "/" + str(month) + ".jpg")
 
     #pagebreak(weak: true)
 
