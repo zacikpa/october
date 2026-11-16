@@ -1,7 +1,94 @@
-#let calendar(year: "", sunday-as-start: false, body) = {
-  set document(title: str(year) + " calendar")
+#import "@preview/linguify:0.5.0": *
+#import "@preview/markly:0.4.0"
+
+#let lang_database = toml("lang.toml")
+#let translate(phrase) = linguify(phrase, from: lang_database)
+
+#let holiday_database = toml("holidays.toml")
+#let name_database = toml("names.toml")
+
+#let calendar(year: "", holidays: "", names: "", photo_dir: "", body) = {
+  set text(font: "Josefin Sans")
+
+  let photo-ctx = markly.setup(
+    stock-width: 320mm,
+    stock-height: 225mm,
+    content-width: 297mm,
+    content-height: 210mm,
+    bleed: 4mm,
+    margin-width: 0mm,
+    margin-height: 0mm,
+    bleed-marks: false,
+    cut-marks: true,
+    registration-marks: true,
+  )
+
+  let calendar-ctx = markly.setup(
+    stock-width: 320mm,
+    stock-height: 225mm,
+    content-width: 297mm,
+    content-height: 210mm,
+    bleed: 4mm,
+    margin-width: 5mm,
+    margin-height: 15mm,
+    bleed-marks: false,
+    cut-marks: true,
+    registration-marks: true,
+  )
+
+  set document(title: str(year))
+
+  let have_names = names in name_database
+  let have_holidays = holidays in holiday_database
+
+  let print_day(date) = {
+    let is_holiday = (
+      have_holidays and date.display() in holiday_database.at(holidays)
+    )
+    let has_name = (
+      have_names and date.display("[month]-[day]") in name_database.at(names)
+    )
+
+    let day_display = text(weight: 400)[#date.display(
+      "[day padding:none]",
+    )]
+    if is_holiday or date.weekday() == 7 {
+      text(red)[#day_display]
+    } else {
+      text(black)[#day_display]
+    }
+
+    h(0.4em)
+
+    if has_name {
+      text(0.75em)[#name_database.at(names).at(date.display("[month]-[day]"))]
+    }
+
+    if is_holiday {
+      align(bottom)[#text(0.75em)[#translate(
+        holiday_database.at(holidays).at(date.display()),
+      )]]
+    }
+  }
 
   for month in range(1, 13) [
+
+    #show: markly.page-setup.with(photo-ctx)
+
+    #place(
+      top + left,
+      dx: -4mm,
+      dy: -4mm,
+      image(
+        photo_dir + "/" + str(month) + ".jpg",
+        width: 297mm + 8mm,
+        height: 210mm + 8mm,
+      ),
+    )
+
+    #pagebreak(weak: true)
+
+    #show: markly.page-setup.with(calendar-ctx)
 
     #let month_date = datetime(
       year: year,
@@ -21,30 +108,34 @@
 
     #align(left)[
       #heading(level: 1)[
-        #text(size: 27pt)[
+        #text(size: 1.2em, weight: 400)[
           #h(0.4em)
-          #month_date.display("[month repr:long]") #year
+          #translate(lower(month_date.display("[month repr:long]"))) #year
         ]
       ]
     ]
 
-    #let start_of_week = if sunday-as-start { "sunday" } else { "monday" }
+    #v(-1em)
+
     #let first_day = int(monthly_days
       .first()
-      .display("[weekday repr:" + start_of_week + "]"))
+      .display("[weekday repr:" + { "monday" } + "]"))
 
     #let week_header = (
-      [Monday],
-      [Tuesday],
-      [Wednesday],
-      [Thursday],
-      [Friday],
-      [Saturday],
-      [Sunday],
+      (
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+      )
+        .map(translate)
+        .map(upper)
+        .map(align.with(center))
+        .map(text.with(weight: 100))
     )
-    #if sunday-as-start {
-      week_header.insert(0, week_header.pop())
-    }
 
     #let empty_cell = none
 
@@ -58,13 +149,11 @@
       table(
         columns: (1fr,) * 7,
         rows: (0.4fr,) + 5 * (1fr,),
-        inset: 0.8em,
+        inset: 0.5em,
         table.header(..week_header),
         ..monthly_days.map(day => {
           if type(day) == type(empty_cell) { return }
-          [#day.display(
-            "[day padding:none]",
-          )]
+          [#print_day(day)]
         }),
         stroke: (x, y) => {
           if y == 0 { return none }
@@ -75,7 +164,7 @@
           ) {
             return none
           }
-          (thickness: 1.5pt)
+          (thickness: 0.5pt)
         },
       ),
     )
