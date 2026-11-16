@@ -26,10 +26,9 @@
 )
 
 #let calendar-ctx = markly-ctx(
-  margin-width: 5mm,
-  margin-height: 15mm,
+  margin-width: 3mm,
+  margin-height: 8mm,
 )
-
 
 #let photo(path) = place(
   top + left,
@@ -127,6 +126,8 @@
       #monthly_days.push(month_accumulator)
     ]
 
+    #v(8mm)
+
     #align(left)[
       #heading(level: 1)[
         #text(size: 1.2em, weight: 400)[
@@ -136,7 +137,7 @@
       ]
     ]
 
-    #v(-1em)
+    #v(-1.5em)
 
     #let first_day = int(monthly_days
       .first()
@@ -169,7 +170,7 @@
       y: 5%,
       table(
         columns: (1fr,) * 7,
-        rows: (0.4fr,) + 5 * (1fr,),
+        rows: (0.3fr,) + 5 * (1fr,),
         inset: 0.5em,
         table.header(..week_header),
         ..monthly_days.map(day => {
