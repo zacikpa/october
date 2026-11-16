@@ -1,11 +1,11 @@
 #import "@preview/linguify:0.5.0": *
 #import "@preview/markly:0.4.0"
 
-#let lang_database = toml("lang.toml")
+#let lang_database = toml("data/lang.toml")
 #let translate(phrase) = linguify(phrase, from: lang_database)
 
-#let holiday_database = toml("holidays.toml")
-#let name_database = toml("names.toml")
+#let holiday_database = toml("data/holidays.toml")
+#let name_database = toml("data/names.toml")
 
 #let calendar(year: "", holidays: "", names: "", photos: "", body) = {
   set text(font: "Josefin Sans")
