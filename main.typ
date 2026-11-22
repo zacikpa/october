@@ -1,10 +1,10 @@
 #import "calendar.typ": calendar
 
-#set text(lang: "sk")
+#set text(lang: sys.inputs.lang)
 
 #show: calendar.with(
-  year: datetime.today().year() + 1,
-  holidays: "CZ",
-  names: "SK",
-  photos: "photos/martinka",
+  year: int(sys.inputs.year),
+  holidays: sys.inputs.holidays,
+  names: sys.inputs.names,
+  photos: sys.inputs.photos,
 )
