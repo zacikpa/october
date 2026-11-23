@@ -1,0 +1,64 @@
+CZ:
+  2027-01-01:
+    name: "czech-restoration-day"
+  2027-03-26:
+    name: "good-friday"
+  2027-03-29:
+    name: "easter-monday"
+  2027-05-01:
+    name: "labour-day"
+  2027-05-08:
+    name: "victory-day"
+  2027-07-05:
+    name: "saints-cyril-and-methodius-day"
+  2027-07-06:
+    name: "jan-hus-day"
+  2027-09-28:
+    name: "czech-statehood-day"
+  2027-10-28:
+    name: "czechoslovak-state-day"
+  2027-11-17:
+    name: "democracy-day"
+  2027-12-24:
+    name: "christmas-eve"
+  2027-12-25:
+    name: "christmas-day"
+  2027-12-26:
+    name: "christmas-day-2"
+
+SK:
+  2027-01-01:
+    name: "slovak-establishment-day"
+  2027-01-06:
+    name: "epiphany"
+  2027-03-26:
+    name: "good-friday"
+  2027-03-29:
+    name: "easter-monday"
+  2027-05-01:
+    name: "labour-day"
+  2027-05-08:
+    name: "victory-day"
+  2027-07-05:
+    name: "saints-cyril-and-methodius-day"
+  2027-08-29:
+    name: "slovak-uprising-day"
+  2027-09-01:
+    name: "slovak-constitution-day"
+    working: true
+  2027-09-15:
+    name: "lady-of-seven-sorrows"
+  2027-10-28:
+    name: "czechoslovak-state-day"
+    working: true
+  2027-11-01:
+    name: "all-saints-day"
+  2027-11-17:
+    name: "democracy-day"
+    working: true
+  2027-12-24:
+    name: "christmas-eve"
+  2027-12-25:
+    name: "christmas-day"
+  2027-12-26:
+    name: "christmas-day-2"

@@ -6,7 +6,7 @@
 #let lang_database = toml("data/lang.toml")
 #let translate(phrase) = linguify(phrase, from: lang_database)
 
-#let holiday_database = toml("data/holidays.toml")
+#let holiday_database = yaml("data/holidays.yaml")
 #let name_database = toml("data/names.toml")
 
 #let markly-ctx = markly.setup.with(
@@ -49,17 +49,32 @@
   let have_holidays = holidays in holiday_database
 
   let print_day(date) = {
-    let is_holiday = (
-      have_holidays and date.display() in holiday_database.at(holidays)
+    let holiday_info = (
+      if not have_holidays {
+        none
+      } else {
+        holiday_database.at(holidays).at(date.display(), default: none)
+      }
     )
-    let has_name = (
-      have_names and date.display("[month]-[day]") in name_database.at(names)
+    let is_non_working_day = (
+      date.weekday() in (6, 7)
+        or (
+          holiday_info != none
+            and not holiday_info.at("working", default: false)
+        )
+    )
+    let name_day = (
+      if not have_names {
+        none
+      } else {
+        name_database.at(names).at(date.display("[month]-[day]"), default: none)
+      }
     )
 
     let day_display = text(weight: 400)[#date.display(
       "[day padding:none]",
     )]
-    if is_holiday or date.weekday() == 7 {
+    if is_non_working_day {
       text(red)[#day_display]
     } else {
       text(black)[#day_display]
@@ -67,14 +82,12 @@
 
     h(0.4em)
 
-    if has_name {
-      text(0.75em)[#name_database.at(names).at(date.display("[month]-[day]"))]
+    if name_day != none {
+      text(0.75em)[#name_day]
     }
 
-    if is_holiday {
-      align(bottom)[#text(0.75em)[#translate(
-        holiday_database.at(holidays).at(date.display()),
-      )]]
+    if holiday_info != none {
+      align(bottom)[#text(0.75em)[#translate(holiday_info.name)]]
     }
   }
 
@@ -88,14 +101,14 @@
     dx: -bleed,
     dy: 15mm,
     block(
-      fill: rgb(0, 0, 0, 180), 
+      fill: rgb(0, 0, 0, 180),
       inset: 16pt,
       radius: 4pt,
       [
         #h(bleed)
         #text(fill: white, size: 30pt, [#title])
-      ]
-    )
+      ],
+    ),
   )
 
   pagebreak()
